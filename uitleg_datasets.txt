@@ -1,0 +1,6 @@
+mat1.get('H')[0][0][0] = complex getal of phasor, in totaal zijn er 100, dus van [0][0][0] tot [0][0][99]
+mat1.get('H')[0][0] = is een vliegtuig positie, in totaal zijn er 24, dus van [0][0] tot [0][23]
+mat1.get('H')[0] = is een frequentietoon, in totaal zijn er 201, dus van [0] tot [200]
+
+mat1.get('H')[0][0][0].real = het reëel gedeelte van de phasor
+mat1.get('H')[0][0][0].imag = het imaginair gedeelte van de phasor
