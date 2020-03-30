@@ -1,47 +1,41 @@
 from math import *
-from numpy import *
-from scipy import *
+import numpy as np
+import scipy as sp
 from scipy.fftpack import *
 from scipy.signal import *
-import matplotlib.pyplot as plt
-
 
 def calculate_delays(dataset):
     n_fasor = dataset.get('H')[0][0].size # total = 100
     n_pos = dataset.get('H')[0].size // dataset.get('H')[0][0].size # total = 24
     n_freq =  dataset.get('H').size // dataset.get('H')[0].size # total = 201
     
-    frequencies = arange(0.00,  n_freq, 1)
-    for i in range (n_freq):
-        frequencies[i] = (1 + 0.01 * i)*10**9;
-      
+    APDP_values = np.arange(0.00, 24.00);
+    
     for i in range(24):
-        PDP_values = channel2APDP(dataset.get('H'), i, frequencies);
+        APDP_values[i] = channel2APDP(dataset.get('H'), i);
+    print(APDP_values)
     
 def channel2APDP(dataset, pos):
     APDP = 0.00
-    for i in range()
+    PDP_array = PDP_calc(dataset, pos)
+    for i in range(PDP_array.size):
+        APDP += PDP_array[i]
+    APDP = APDP / PDP_array.size
+    return APDP
 
-def channel2PDP(dataset, pos, frequencies):
+def PDP_calc(dataset, pos):
     PDP_values = [None] * 100;
     frequentiekarakteristiek = [complex] * 201
     
-    for i in range(201):
-        frequentiekarakteristiek[i] = dataset[i][pos][0]
-    
-    frequentiekarakteristiek = asarray(frequentiekarakteristiek) 
-    
-    ifft_freq = ifft(frequentiekarakteristiek)
-    
-    absF = abs(frequentiekarakteristiek)    
-    fftFreq = fftfreq(len(absF), 1/(len(absF)))
-    power = ifft_freq**2;
-    
-    plt.figure(figsize=(10, 10))
-    plt.subplot(311)
-    plt.plot(frequencies, absF, color='r', label='Frequency response')
-    plt.legend()
-    plt.subplot(312)
-    plt.plot(power, color='k', label='absF')
-    plt.legend()
-    
+    for i in range(100):
+        for j in range(201):
+            frequentiekarakteristiek[j] = dataset[j][pos][i]  
+        frequentiekarakteristiek = np.asarray(frequentiekarakteristiek)   
+        ifft_freq = ifft(frequentiekarakteristiek) 
+        ifft_freq = abs(ifft_freq)
+        power_value = sp.sum(ifft_freq*ifft_freq)/ifft_freq.size
+        PDP_values[i] = power_value
+        PDP_values = np.asarray(PDP_values)
+    return PDP_values
+            
+            
