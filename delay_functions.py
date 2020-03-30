@@ -14,11 +14,16 @@ def calculate_delays(dataset):
     frequencies = arange(0.00,  n_freq, 1)
     for i in range (n_freq):
         frequencies[i] = (1 + 0.01 * i)*10**9;
-        
-    channel2APDP(dataset.get('H'), 0, frequencies);
+      
+    for i in range(24):
+        PDP_values = channel2APDP(dataset.get('H'), i, frequencies);
     
+def channel2APDP(dataset, pos):
+    APDP = 0.00
+    for i in range()
 
-def channel2APDP(dataset, pos, frequencies):
+def channel2PDP(dataset, pos, frequencies):
+    PDP_values = [None] * 100;
     frequentiekarakteristiek = [complex] * 201
     
     for i in range(201):
@@ -26,15 +31,17 @@ def channel2APDP(dataset, pos, frequencies):
     
     frequentiekarakteristiek = asarray(frequentiekarakteristiek) 
     
-    absF = abs(frequentiekarakteristiek)
-    fftFreq = fftfreq(len(absF), 1/(len(absF)))
+    ifft_freq = ifft(frequentiekarakteristiek)
     
-    ifft_freq= ifft(frequentiekarakteristiek)
+    absF = abs(frequentiekarakteristiek)    
+    fftFreq = fftfreq(len(absF), 1/(len(absF)))
+    power = ifft_freq**2;
     
     plt.figure(figsize=(10, 10))
-    plt.subplot(211)
+    plt.subplot(311)
     plt.plot(frequencies, absF, color='r', label='Frequency response')
     plt.legend()
-    plt.subplot(212)
-    plt.plot(fftFreq, absF, color='b', label='Frequency response')
+    plt.subplot(312)
+    plt.plot(power, color='k', label='absF')
     plt.legend()
+    
