@@ -51,18 +51,27 @@ def channel2APDP(data, pos, venster = 0):
 # =============================================================================
 def APDP2delays(APDP):
     maximums = argrelextrema(APDP, np.greater)
+    max1 = 0.00;
+    max2 = 0.00;
     t1 = 0.00;
     t2 = 0.00;
+    timestep = 0.498; # nanoseconden
     
     for j in range(2):
         for i in range(maximums[0].size):
             if(j == 0):
-                if(maximums[0][i] != -1 and t1 < APDP[maximums[0][i]]):
-                    t1 = APDP[maximums[0][i]]
+                if(maximums[0][i] != -1 and max1 < APDP[maximums[0][i]]):
+                    max1 = APDP[maximums[0][i]]
+                    t1 = maximums[0][i] * timestep;
+            if(j == 1):
+                if(maximums[0][i] != -1 and max2 < APDP[maximums[0][i]]):
+                    max2 = APDP[maximums[0][i]]
+                    t2 = maximums[0][i] * timestep;            
+        for i in range(maximums[0].size):
+            if(j == 0):
+                if max1 == APDP[maximums[0][i]]:
                     maximums[0][i] = -1
             if(j == 1):
-                if(maximums[0][i] != -1 and t2 < APDP[maximums[0][i]]):
-                    t2 = APDP[maximums[0][i]]
+                if max2 == APDP[maximums[0][i]]:
                     maximums[0][i] = -1
-    
     return t1, t2

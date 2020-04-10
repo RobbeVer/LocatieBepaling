@@ -13,5 +13,5 @@ def get_locations():
     print(np.sin(90))
     return loc_array
 
-def calculate_locations(delays):
+def calculate_locations(delays):    
     return delays
