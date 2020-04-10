@@ -1,21 +1,27 @@
 import numpy as np
 from scipy.fftpack import ifft
-from scipy.signal import gaussian
+from scipy.signal import gaussian, argrelextrema
 import matplotlib.pyplot as plt
-
-def coswav(f, fs, duur):
-    lengte = fs * duur
-    stap = 2 * np.pi * f / fs
-    return np.cos(np.arange(0, lengte * stap, stap))
 
 def calculate_delays(dataset):
     APDP_values = [None] * 24;
+    delays = np.asarray([None] * 24)
+    for i in range(delays.size):
+        delays[i] = np.asarray([None, None])
+    
     for i in range(24):
         APDP_values[i] = channel2APDP(dataset, i);
-     
+    
+    APDP_values = np.asarray(APDP_values) 
+    
     plt.figure(figsize=(10, 10))
     for i in range(24):
         plt.plot(APDP_values[i])
+      
+    for i in range(delays.size):
+        delays[i][0], delays[i][1] = APDP2delays(APDP_values[i])
+    
+    return delays
 
 # =============================================================================
 # De APDP berekenen bij een bepaalde positie
@@ -39,28 +45,24 @@ def channel2APDP(data, pos, venster = 0):
      
     APDP = APDP/100 # Het gemiddelde nemen van de 100 meetpunten
     return APDP
+
+# =============================================================================
+# De delays eruit halen uit de APDP
+# =============================================================================
+def APDP2delays(APDP):
+    maximums = argrelextrema(APDP, np.greater)
+    t1 = 0.00;
+    t2 = 0.00;
     
-#def channel2APDP(dataset, pos):
-#    APDP = 0.00
-#    PDP_array = PDP_calc(dataset, pos) # voor 1 positie de PDP waarden gaan berekenen (want er 100 keer gemeten op 1 positie)
-#    for i in range(PDP_array.size):
-#        APDP += PDP_array[i] # alle PDP waarden optellen
-#    APDP = APDP / PDP_array.size # het gemiddelde ervan nemen
-#    return APDP
-#
-#def PDP_calc(dataset, pos):
-#    PDP_values = [None] * 100;
-#    frequentiekarakteristiek = [complex] * 201
-#    
-#    for i in range(100): # er wordt 100 keer gekeken vanwege dat er 100 keer werd gemeten per positie
-#        for j in range(201): # elke frequentie overlopen, van 1GHz tot 3GHz
-#            frequentiekarakteristiek[j] = dataset[j][pos][i] # de complexe getallen van elke frequentie in het array steken
-#        frequentiekarakteristiek = np.asarray(frequentiekarakteristiek)   
-#        ifft_freq = ifft(frequentiekarakteristiek) 
-#        ifft_freq = abs(ifft_freq)
-#        power_value = sp.sum(ifft_freq**2)/ifft_freq.size # het vermogen van het signaal berekenen
-#        PDP_values[i] = power_value # de vermogens opslaan in het array
-#        PDP_values = np.asarray(PDP_values)
-#        plt.plot(ifft_freq)
-#    return PDP_values
-       
+    for j in range(2):
+        for i in range(maximums[0].size):
+            if(j == 0):
+                if(maximums[0][i] != -1 and t1 < APDP[maximums[0][i]]):
+                    t1 = APDP[maximums[0][i]]
+                    maximums[0][i] = -1
+            if(j == 1):
+                if(maximums[0][i] != -1 and t2 < APDP[maximums[0][i]]):
+                    t2 = APDP[maximums[0][i]]
+                    maximums[0][i] = -1
+    
+    return t1, t2
