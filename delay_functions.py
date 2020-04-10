@@ -8,7 +8,8 @@ def coswav(f, fs, duur):
     stap = 2 * np.pi * f / fs
     return np.cos(np.arange(0, lengte * stap, stap))
 
-def calculate_delays(dataset):
+# Uit ADPD de delays berekenen:
+def calculate_delays(dataset): 
     APDP_values = [None] * 24;
     for i in range(24):
         APDP_values[i] = channel2APDP(dataset, i);
