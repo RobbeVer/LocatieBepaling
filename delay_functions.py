@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.fftpack import ifft
-from scipy.signal import gaussian, argrelextrema
+from scipy.signal import gaussian, argrelextrema, find_peaks
 import matplotlib.pyplot as plt
 
 def calculate_delays(dataset):
@@ -10,11 +10,13 @@ def calculate_delays(dataset):
         delays[i] = np.asarray([None, None])
     
     for i in range(24):
-        APDP_values[i] = channel2APDP(dataset, i);
+        APDP_values[i] = channel2APDP(dataset, i, 1);
     
     APDP_values = np.asarray(APDP_values) 
     
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(20, 10))
+    plt.xlim((0,60))
+    plt.locator_params(axis='x', nbins='60')
     for i in range(24):
         plt.plot(APDP_values[i])
       
@@ -50,19 +52,21 @@ def channel2APDP(data, pos, venster = 0):
 # De delays eruit halen uit de APDP
 # =============================================================================
 def APDP2delays(APDP):
-    maximums = argrelextrema(APDP, np.greater)
-    t1 = 0.00;
-    t2 = 0.00;
+    peak1 = 0
+    peak2 = 0
+    pos_peak1= 0
+    pos_peak2= 0
+    maximum_indices, properties = find_peaks(APDP, height = 0) #Vind de indexen van de peaken
+    heights = properties["peak_heights"] #Hoogte van alle peaken opvragen
+    timestep = 0.4975 #nanoseconden per stap
     
-    for j in range(2):
-        for i in range(maximums[0].size):
-            if(j == 0):
-                if(maximums[0][i] != -1 and t1 < APDP[maximums[0][i]]):
-                    t1 = APDP[maximums[0][i]]
-                    maximums[0][i] = -1
-            if(j == 1):
-                if(maximums[0][i] != -1 and t2 < APDP[maximums[0][i]]):
-                    t2 = APDP[maximums[0][i]]
-                    maximums[0][i] = -1
-    
-    return t1, t2
+    for i in range(heights.size):
+        if(heights[i] > peak1): #Grootste peak
+            pos_peak1 = maximum_indices[i]
+            peak1 = heights[i];
+        elif(heights[i] > peak2): #2de hoogste peak
+            pos_peak2 = maximum_indices[i]
+            peak2 = heights[i]
+
+
+    return (pos_peak1*timestep), (pos_peak2*timestep)
