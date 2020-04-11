@@ -54,15 +54,19 @@ def channel2APDP(data, pos, venster = 0):
 def APDP2delays(APDP):
     peak1 = 0
     peak2 = 0
+    pos_peak1= 0
+    pos_peak2= 0
     maximum_indices, properties = find_peaks(APDP, height = 0) #Vind de indexen van de peaken
     heights = properties["peak_heights"] #Hoogte van alle peaken opvragen
     timestep = 0.498 #nanoseconden per stap
     
     for i in range(heights.size):
         if(heights[i] > peak1): #Grootste peak
-            peak1 = maximum_indices[i]
+            pos_peak1 = maximum_indices[i]
+            peak1 = heights[i];
         elif(heights[i] > peak2): #2de hoogste peak
-            peak2 = maximum_indices[i]
+            pos_peak2 = maximum_indices[i]
+            peak2 = heights[i]
 
 
-    return (peak1*timestep), (peak2*timestep)
+    return (pos_peak1*timestep), (pos_peak2*timestep)
