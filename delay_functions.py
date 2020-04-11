@@ -10,7 +10,7 @@ def calculate_delays(dataset):
         delays[i] = np.asarray([None, None])
     
     for i in range(24):
-        APDP_values[i] = channel2APDP(dataset, i);
+        APDP_values[i] = channel2APDP(dataset, i, 1);
     
     APDP_values = np.asarray(APDP_values) 
     
@@ -58,7 +58,7 @@ def APDP2delays(APDP):
     pos_peak2= 0
     maximum_indices, properties = find_peaks(APDP, height = 0) #Vind de indexen van de peaken
     heights = properties["peak_heights"] #Hoogte van alle peaken opvragen
-    timestep = 0.498 #nanoseconden per stap
+    timestep = 0.4975 #nanoseconden per stap
     
     for i in range(heights.size):
         if(heights[i] > peak1): #Grootste peak
