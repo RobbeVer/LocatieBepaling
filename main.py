@@ -1,9 +1,10 @@
 import scipy.io
 from delay_functions import * 
 from pathlib import Path
+import matplotlib.pyplot as plt
 from delay_functions import calculate_delays
 from location_functions import calculate_locations, get_locations
-import matplotlib.pyplot as plt
+
 
 def get_matfile(name):
 	dirname = Path(__file__).parent.parent
