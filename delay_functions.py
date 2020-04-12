@@ -7,20 +7,20 @@ def calculate_delays(dataset):
     APDP_values = [None] * 24;
     delays = np.asarray([None] * 24)
     for i in range(delays.size):
-        delays[i] = np.asarray([None, None])
+        delays[i] = np.asarray([0.00, 0.00])
     
     for i in range(24):
-        APDP_values[i] = channel2APDP(dataset, i);
+        APDP_values[i] = channel2APDP(dataset, i, 1);
     
     APDP_values = np.asarray(APDP_values) 
     
     plt.figure(figsize=(10, 10))
     for i in range(24):
         plt.plot(APDP_values[i])
-      
+        
+    x, y = APDP2delays(APDP_values[16])   
     for i in range(delays.size):
         delays[i][0], delays[i][1] = APDP2delays(APDP_values[i])
-    
     return delays
 
 # =============================================================================
@@ -55,23 +55,64 @@ def APDP2delays(APDP):
     max2 = 0.00;
     t1 = 0.00;
     t2 = 0.00;
-    timestep = 0.498; # nanoseconden
-    
+    timestep = 0.498; # (1/10MHz)/201 seconden
     for j in range(2):
-        for i in range(maximums[0].size):
+        for i in range(maximums[0].size):           
             if(j == 0):
                 if(maximums[0][i] != -1 and max1 < APDP[maximums[0][i]]):
                     max1 = APDP[maximums[0][i]]
-                    t1 = maximums[0][i] * timestep;
+                    t1 = maximums[0][i] * timestep
             if(j == 1):
                 if(maximums[0][i] != -1 and max2 < APDP[maximums[0][i]]):
                     max2 = APDP[maximums[0][i]]
-                    t2 = maximums[0][i] * timestep;            
+                    t2 = maximums[0][i] * timestep
+                    break
+
         for i in range(maximums[0].size):
             if(j == 0):
-                if max1 == APDP[maximums[0][i]]:
+                if max1 != APDP[maximums[0][i]]:
                     maximums[0][i] = -1
+                else:
+                    maximums[0][i] = -1
+                    break
             if(j == 1):
-                if max2 == APDP[maximums[0][i]]:
+                if max2 != APDP[maximums[0][i]]:
                     maximums[0][i] = -1
-    return t1, t2
+                else:
+                    maximums[0][i] = -1
+                    break
+    return t1, t2    
+
+#def APDP2delays(APDP):
+#    maximums = argrelextrema(APDP, np.greater)
+#    max1 = 0.00;
+#    max2 = 0.00;
+#    t1 = 0.00;
+#    t2 = 0.00;
+#    timestep = 0.498; # (1/10MHz)/201 seconden
+#    for j in range(2):
+#        for i in range(maximums[0].size):           
+#            if(j == 0):
+#                if(maximums[0][i] != -1 and max1 < APDP[maximums[0][i]]):
+#                    max1 = APDP[maximums[0][i]]
+#                    t1 = maximums[0][i] * timestep
+#            if(j == 1):
+#                if(maximums[0][i] != -1 and max2 < APDP[maximums[0][i]]):
+#                    max2 = APDP[maximums[0][i]]
+#                    t2 = maximums[0][i] * timestep
+#                    break
+#
+#        for i in range(maximums[0].size):
+#            if(j == 0):
+#                if max1 != APDP[maximums[0][i]]:
+#                    maximums[0][i] = -1
+#                else:
+#                    maximums[0][i] = -1
+#                    break
+#            if(j == 1):
+#                if max2 != APDP[maximums[0][i]]:
+#                    maximums[0][i] = -1
+#                else:
+#                    maximums[0][i] = -1
+#                    break
+#    return t1, t2
