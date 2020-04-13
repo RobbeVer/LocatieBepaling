@@ -20,8 +20,7 @@ def calculate_locations(delays):
     distances = np.asarray([None] * delays.size) #Initialiseer array even groot als delays
     for i in range(distances.size):
         distances[i] = (delays[i][0] * lightspeed , delays[i][1] * lightspeed) #Afstanden in meter
-    print("distances")
-    print(distances)
+        
     answers = np.asarray([None] * delays.size) 
     for i in range(answers.size):
         d0 = distances[i][0]
@@ -31,7 +30,6 @@ def calculate_locations(delays):
         answers[i] = solve((1+c)**2+(sqrt((d0)**2-c**2)-sqrt((d1/(2+c))**2-1))**2-(d1-d1/(2+c))**2, c)
         
         answers[i][0] = sqrt(d0**2 - answers[i][1]**2)
-        answers[i][1] = answers[i][1] + 1;
-    
+        answers[i][1] = answers[i][1] + 1;    
 
     return answers
