@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.fftpack import ifft
-from scipy.signal import gaussian, argrelextrema
+from scipy.signal import gaussian, argrelextrema, find_peaks
 import matplotlib.pyplot as plt
 
 def calculate_delays(dataset):
@@ -14,7 +14,9 @@ def calculate_delays(dataset):
     
     APDP_values = np.asarray(APDP_values) 
     
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(20, 10))
+    plt.xlim((0,60))
+    plt.locator_params(axis='x', nbins='60')
     for i in range(24):
         plt.plot(APDP_values[i])
         
@@ -50,69 +52,21 @@ def channel2APDP(data, pos, venster = 0):
 # De delays eruit halen uit de APDP
 # =============================================================================
 def APDP2delays(APDP):
-    maximums = argrelextrema(APDP, np.greater)
-    max1 = 0.00;
-    max2 = 0.00;
-    t1 = 0.00;
-    t2 = 0.00;
-    timestep = 0.498; # (1/10MHz)/201 seconden
-    for j in range(2):
-        for i in range(maximums[0].size):           
-            if(j == 0):
-                if(maximums[0][i] != -1 and max1 < APDP[maximums[0][i]]):
-                    max1 = APDP[maximums[0][i]]
-                    t1 = maximums[0][i] * timestep
-            if(j == 1):
-                if(maximums[0][i] != -1 and max2 < APDP[maximums[0][i]]):
-                    max2 = APDP[maximums[0][i]]
-                    t2 = maximums[0][i] * timestep
-                    break
+    peak1 = 0
+    peak2 = 0
+    pos_peak1= 0
+    pos_peak2= 0
+    maximum_indices, properties = find_peaks(APDP, height = 0) #Vind de indexen van de peaken
+    heights = properties["peak_heights"] #Hoogte van alle peaken opvragen
+    timestep = 0.4975 #nanoseconden per stap
+    
+    for i in range(heights.size):
+        if(heights[i] > peak1): #Grootste peak
+            pos_peak1 = maximum_indices[i]
+            peak1 = heights[i];
+        elif(heights[i] > peak2): #2de hoogste peak
+            pos_peak2 = maximum_indices[i]
+            peak2 = heights[i]
 
-        for i in range(maximums[0].size):
-            if(j == 0):
-                if max1 != APDP[maximums[0][i]]:
-                    maximums[0][i] = -1
-                else:
-                    maximums[0][i] = -1
-                    break
-            if(j == 1):
-                if max2 != APDP[maximums[0][i]]:
-                    maximums[0][i] = -1
-                else:
-                    maximums[0][i] = -1
-                    break
-    return t1, t2    
 
-#def APDP2delays(APDP):
-#    maximums = argrelextrema(APDP, np.greater)
-#    max1 = 0.00;
-#    max2 = 0.00;
-#    t1 = 0.00;
-#    t2 = 0.00;
-#    timestep = 0.498; # (1/10MHz)/201 seconden
-#    for j in range(2):
-#        for i in range(maximums[0].size):           
-#            if(j == 0):
-#                if(maximums[0][i] != -1 and max1 < APDP[maximums[0][i]]):
-#                    max1 = APDP[maximums[0][i]]
-#                    t1 = maximums[0][i] * timestep
-#            if(j == 1):
-#                if(maximums[0][i] != -1 and max2 < APDP[maximums[0][i]]):
-#                    max2 = APDP[maximums[0][i]]
-#                    t2 = maximums[0][i] * timestep
-#                    break
-#
-#        for i in range(maximums[0].size):
-#            if(j == 0):
-#                if max1 != APDP[maximums[0][i]]:
-#                    maximums[0][i] = -1
-#                else:
-#                    maximums[0][i] = -1
-#                    break
-#            if(j == 1):
-#                if max2 != APDP[maximums[0][i]]:
-#                    maximums[0][i] = -1
-#                else:
-#                    maximums[0][i] = -1
-#                    break
-#    return t1, t2
+    return (pos_peak1*timestep), (pos_peak2*timestep)

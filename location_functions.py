@@ -15,27 +15,23 @@ def get_locations():
     return loc_array
 
 def calculate_locations(delays):
-    locations = np.asarray([None] * 24)
-    for i in range(delays.size):
-        locations[i] = np.asarray([None, None])
-        
-    distances = delays*10**-9*299792458
-    for i in range(locations.size):
-        print("distances op index",i,":",distances[i])
-    for i in range(delays.size):
-        d_0 = distances[i][0]
-        d_1 = distances[i][1]
+    lightspeed = 0.299792458 #meter/nanoseconde
+    
+    distances = np.asarray([None] * delays.size) #Initialiseer array even groot als delays
+    for i in range(distances.size):
+        distances[i] = (delays[i][0] * lightspeed , delays[i][1] * lightspeed) #Afstanden in meter
+    print("distances")
+    print(distances)
+    answers = np.asarray([None] * delays.size) 
+    for i in range(answers.size):
+        d0 = distances[i][0]
+        d1 = distances[i][1]
+    
         c = Symbol('c')
-        answers = solve((1+c)**2+(sqrt((d_0)**2-c**2)-sqrt((d_1/(2+c))**2-1))**2-(d_1-d_1/(2+c))**2, c)
-        h = 0.00
-#        print("index",i,"answers:",answers)
-        if(answers[0] > 0):
-            h = answers[0]
-        else:
-            h = answers[1]
-        y = h + 1
-        x = sqrt(d_0**2-h**2)
-        locations[i][0] = x
-        locations[i][1] = y
+        answers[i] = solve((1+c)**2+(sqrt((d0)**2-c**2)-sqrt((d1/(2+c))**2-1))**2-(d1-d1/(2+c))**2, c)
         
-    return locations
+        answers[i][0] = sqrt(d0**2 - answers[i][1]**2)
+        answers[i][1] = answers[i][1] + 1;
+    
+
+    return answers
