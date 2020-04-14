@@ -15,7 +15,7 @@ def get_locations():
     return loc_array
 
 def calculate_locations(delays):
-    lightspeed = 0.299792458 #meter/nanoseconde
+    lightspeed = 0.299792458 # meter/nanoseconde => snelheid van het licht
     
     distances = np.asarray([None] * delays.size) #Initialiseer array even groot als delays
     for i in range(distances.size):
@@ -31,5 +31,5 @@ def calculate_locations(delays):
         
         answers[i][0] = sqrt(d0**2 - answers[i][1]**2)
         answers[i][1] = answers[i][1] + 1;    
-
+        answers[i] = np.asarray(answers[i])
     return answers

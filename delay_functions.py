@@ -52,7 +52,7 @@ def channel2APDP(data, pos, n_freq, n_measure, venster = 0):
     return APDP
 
 # =============================================================================
-# De delays eruit halen uit de APDP
+# De delays uit de APDP halen
 # =============================================================================
 def APDP2delays(APDP, timestep):
     peak1 = 0
