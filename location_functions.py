@@ -1,5 +1,4 @@
 import numpy as np
-
 from sympy.solvers import solve
 from sympy import Symbol, sqrt
 
@@ -16,22 +15,21 @@ def get_locations():
     return loc_array
 
 def calculate_locations(delays):
-    lightspeed = 0.299792458 #meter/nanoseconde
+    lightspeed = 0.299792458 # meter/nanoseconde => snelheid van het licht
     
     distances = np.asarray([None] * delays.size) #Initialiseer array even groot als delays
     for i in range(distances.size):
         distances[i] = (delays[i][0] * lightspeed , delays[i][1] * lightspeed) #Afstanden in meter
-    
+        
     answers = np.asarray([None] * delays.size) 
     for i in range(answers.size):
-        t0 = distances[i][0]
-        t1 = distances[i][1]
+        d0 = distances[i][0]
+        d1 = distances[i][1]
     
         c = Symbol('c')
-        answers[i] = solve((1+c)**2+(sqrt((t0)**2-c**2)-sqrt((t1/(2+c))**2-1))**2-(t1-t1/(2+c))**2, c)
+        answers[i] = solve((1+c)**2+(sqrt((d0)**2-c**2)-sqrt((d1/(2+c))**2-1))**2-(d1-d1/(2+c))**2, c)
         
-        answers[i][0] = sqrt(t0**2 - answers[i][1]**2)
-        answers[i][1] = answers[i][1] + 1;
-    
-
+        answers[i][0] = sqrt(d0**2 - answers[i][1]**2)
+        answers[i][1] = answers[i][1] + 1;    
+        answers[i] = np.asarray(answers[i])
     return answers
