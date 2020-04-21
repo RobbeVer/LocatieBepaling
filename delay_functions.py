@@ -3,7 +3,7 @@ from scipy.fftpack import ifft
 from scipy.signal import gaussian, find_peaks #argrelextrema
 import matplotlib.pyplot as plt
 
-def calculate_delays(dataset):
+def calculate_delays(dataset, venster_on, title):
     n_freq = dataset.size//dataset[0].size
     n_pos = dataset[0].size//dataset[0][0].size # 24
     n_measure = dataset[0][0].size
@@ -14,15 +14,21 @@ def calculate_delays(dataset):
         delays[i] = np.asarray([0.00, 0.00])
     
     for i in range(n_pos):
-        APDP_values[i] = channel2APDP(dataset, i, n_freq, n_measure,venster = 1);
+        APDP_values[i] = channel2APDP(dataset, i, n_freq, n_measure,venster = venster_on);
 
     APDP_values = np.asarray(APDP_values) 
-    
+    x_time_values = np.asarray([None] * APDP_values[0].size)
+    for i in range(APDP_values[0].size):
+        x_time_values[i] = i * timestep
+        
     plt.figure(figsize=(10, 10))
-#    plt.xlim((0,60))
-#    plt.locator_params(axis='x', nbins='60')
+    plt.title(label=title) 
+    plt.xlim(right=40)
+    plt.xlim(left=0)
+    plt.xlabel('delay (ns)')
+    plt.ylabel('APDP')
     for i in range(n_pos):
-        plt.plot(APDP_values[i])
+        plt.plot(x_time_values, APDP_values[i])
          
     for i in range(delays.size):
         delays[i][0], delays[i][1] = APDP2delays(APDP_values[i], timestep)
@@ -59,14 +65,14 @@ def APDP2delays(APDP, timestep):
     peak2 = 0
     pos_peak1= 0
     pos_peak2= 0
-    maximum_indices, properties = find_peaks(APDP, height = 0) #Vind de indexen van de peaken
-    heights = properties["peak_heights"] #Hoogte van alle peaken opvragen
+    maximum_indices, properties = find_peaks(APDP, height = 0) # Vind de indexen van de peaken
+    heights = properties["peak_heights"] # Hoogte van alle peaken opvragen
     
     for i in range(heights.size):
-        if(heights[i] > peak1): #Grootste peak
+        if(heights[i] > peak1): # Grootste peak
             pos_peak1 = maximum_indices[i]
             peak1 = heights[i];
-        elif(heights[i] > peak2): #2de hoogste peak
+        elif(heights[i] > peak2): # 2de hoogste peak
             pos_peak2 = maximum_indices[i]
             peak2 = heights[i]
 
