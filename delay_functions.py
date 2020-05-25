@@ -41,7 +41,7 @@ def channel2APDP(data, pos, n_freq, n_measure, venster = 0):
     APDP = np.zeros(n_freq)
     for i in range (n_measure): # We itereren 100 keer omdat er per plaats 100 keer de frequentiekarakteristiek is gemeten
         f_karakteristiek = [None] * n_freq
-        for j in range(n_freq): # ALle frequenties worden overlopen, van 1GHz to 3GHz (201 meetpunten in totaal)
+        for j in range(n_freq): # Alle frequenties worden overlopen, bv. van 1GHz to 3GHz voor dataset 1(201 meetpunten in totaal)
             f_karakteristiek[j] = data[j][pos][i]
         
         if(venster == 1) : # er kan gekozen worden om een window toe te passen

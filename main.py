@@ -1,6 +1,7 @@
 import scipy.io
 import csv
 import numpy as np
+import os
 from pathlib import Path
 import matplotlib.pyplot as plt
 from delay_functions import calculate_delays
@@ -90,6 +91,8 @@ errors2_b = abs(locations2_b - loc_array)
 # =============================================================================
 # CSV bestanden maken
 # =============================================================================
+if not os.path.exists('../csv_files/'):
+    os.makedirs('../csv_files/')
 export_to_csv(loc_array, 'original_coordinates')
 export_to_csv(locations1_a, 'locations1_a_coordinates')
 export_to_csv(locations1_b, 'locations1_b_coordinates')
